@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Nerd News</string>
+    <string name="cannot_fetch_content_right_now">Unable to fetch new content at this time, please try again later.</string>
+    <string name="updated">You\'re update to date!</string>
 </resources>

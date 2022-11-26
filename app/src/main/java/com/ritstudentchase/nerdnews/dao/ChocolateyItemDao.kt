@@ -14,6 +14,8 @@ interface ChocolateyItemDao {
 
     @Update
     fun update(item: ChocolateyItem)
+    @Update
+    fun update(items: List<ChocolateyItem>)
 
     @Insert
     fun insertAll(items: List<ChocolateyItem>)

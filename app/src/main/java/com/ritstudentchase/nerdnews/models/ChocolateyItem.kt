@@ -12,11 +12,11 @@ const val CHOCOLATEY_ITEM_TABLE_NAME = "chocolatey_item"
 @Entity(tableName = CHOCOLATEY_ITEM_TABLE_NAME)
 data class ChocolateyItem(
     @PrimaryKey val guid: String,
-    @ColumnInfo val title: String?,
+    @ColumnInfo val title: String,
     @ColumnInfo val link: String?,
     @ColumnInfo val description: String?,
     @ColumnInfo val author: String?,
-    @ColumnInfo val pubDate: String?,
-    @ColumnInfo val content: String?,
+    @ColumnInfo val pubDate: String,
+    @ColumnInfo val content: String,
     @ColumnInfo val comments: String?
 )

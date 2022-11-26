@@ -5,6 +5,7 @@ package com.ritstudentchase.nerdnews.viewmodels
  */
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
 import android.util.Xml
 import androidx.compose.runtime.MutableState
@@ -50,27 +51,32 @@ class ChocolateyFeedViewModel(
     private var channelDao = database.chocolateyChannelDao()
 
     // channel and items, load with initial database information
-    private lateinit var channel: MutableState<ChocolateyChannel?>
-    private lateinit var items: MutableList<ChocolateyItem?>
+    private val channel: MutableState<ChocolateyChannel?> = mutableStateOf(null)
+    private val items: MutableList<ChocolateyItem?> = mutableStateListOf()
 
-//    fun getChannel() = channel
-//    fun getItems() = items
+    fun getChannel() = channel
+    fun getItems() = items
 
     suspend fun loadLocal() {
         withContext(Dispatchers.IO) {
-            channel = mutableStateOf(channelDao.getAll().firstOrNull())
-            val r = mutableStateListOf<ChocolateyItem?>()
+            channel.value = channelDao.getAll().firstOrNull()
             itemsDao.getAll().collect() {
-                r.addAll(it)
+                items.addAll(it)
             }
-            items = r
         }
     }
 
     /**
      * Request new items from Chocolatey's servers and merges them into the list of feed items if needed.
      */
-    suspend fun mergeRemoteFeedItems() : RequestResult {
+    fun mergeRemoteFeedItems(): RequestResult {
+        Log.d("mergeRemoteFeedItems", "Fetching upstream information from Chocolately.")
+        // Check network state
+        //val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        //val info = cm.activeNetwork // Requires android 23
+
+
+
         val url = URL("https://feeds.feedburner.com/ChocolateyBlog")
         val urlConnection: HttpURLConnection = url.openConnection() as HttpURLConnection
         // TODO: check internet status
@@ -83,71 +89,40 @@ class ChocolateyFeedViewModel(
                     RequestCode.BadParse
                 )
 
-
-            channelDao.update(newChannel!!)
-            //itemsDao.u(newItems)
+            // Begin update logic if the current channel is not null
+            if (channel.value != null) {
+                val currentChannel = channel.value!!
+                // If pubDate is equal, no new content to report
+                if (currentChannel.pubDate != newChannel!!.pubDate) {
+                    // 1. Update channel
+                    channelDao.update(newChannel)
+                    channel.value = newChannel
+                    // 2. Determine which items are new and handle them
+                    for (item in newItems) {
+                        // If new, insert
+                        if (items.all { it!!.guid != item.guid }) {
+                            items.add(item)
+                            itemsDao.insertAll(item)
+                        }
+                    }
+                }
+            }
+            // Begin insertion logic
+            else {
+                channel.value = newChannel
+                channelDao.insert(newChannel!!)
+                itemsDao.insertAll(newItems)
+                items.addAll(newItems)
+            }
 
             return RequestResult(
                 true,
                 context.getString(R.string.updated),
                 RequestCode.UpToDate
             )
-
-//            for (item in newItems) {
-//                itemsDao.upsert(item)
-//            }
-
-            // Begin update logic if the current channel is not null
-//            if (channel.value != null) {
-//                val currentChannel = channel.value!!
-//                // If pubDate is equal, no new content to report
-//                if (currentChannel.pubDate == newChannel!!.pubDate) {
-//                    return RequestResult(
-//                        true,
-//                        context.getString(R.string.already_up_to_date),
-//                        RequestCode.AlreadySynced
-//                    )
-//                }
-//                // PubDate was not equal, therefore, new content is lurking somewhere
-//                else {
-//                    // 1. Update channel
-//                    updateChannel(currentChannel, newChannel)
-//                    // 2. Determine which items are new and handle them
-//                    // 3. Determine if any existing items' pubDate has changed and update them
-//                }
-//            }
-//            // Begin insertion logic
-//            else {
-//                channel.value = newChannel
-//                channelDao.insertAll(newChannel!!)
-//                itemsDao.insertAll(newItems)
-//            }
         } finally {
             urlConnection.disconnect()
         }
-    }
-
-    /**
-     * This function updates the current channel to the new channel.
-     * IMPORTANT: Assumes there is a current channel and a new channel instance.
-     */
-    private fun updateChannel(currentChannel: ChocolateyChannel, newChannel: ChocolateyChannel) {
-
-    }
-
-    private fun updateItem() {
-
-    }
-
-    private fun mergeLocalChannel() {
-
-    }
-
-    /**
-     * Merge local feed items into channel
-     */
-    private fun mergeLocalFeedItems() {
-
     }
 
     /**
@@ -234,12 +209,12 @@ class ChocolateyFeedViewModel(
         return Pair(
             ChocolateyChannel(
                 pubDate!!,
-                title,
-                link,
-                description,
-                copyright,
-                managingEditor,
-                lastBuildDate),
+                title!!,
+                link!!,
+                description!!,
+                copyright!!,
+                managingEditor!!,
+                lastBuildDate!!),
             items
         )
     }
@@ -285,12 +260,12 @@ class ChocolateyFeedViewModel(
         parser.require(XmlPullParser.END_TAG, null, "item")
         return ChocolateyItem(
             guid!!,
-            title,
+            title!!,
             link,
             description,
             author,
-            pubDate,
-            content,
+            pubDate!!,
+            content!!,
             comments
         )
     }

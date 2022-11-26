@@ -11,11 +11,11 @@ const val CHOCOLATEY_CHANNEL_TABLE_NAME = "chocolatey_channel"
  */
 @Entity(tableName = CHOCOLATEY_CHANNEL_TABLE_NAME)
 data class ChocolateyChannel(
-    @PrimaryKey val pubDate: String,
-    @ColumnInfo val title: String?,
-    @ColumnInfo val link: String?,
-    @ColumnInfo val description: String?,
-    @ColumnInfo val copyright: String?,
-    @ColumnInfo val managingEditor: String?,
-    @ColumnInfo val lastBuildDate: String?
+    @PrimaryKey val link: String,
+    @ColumnInfo val title: String,
+    @ColumnInfo val pubDate: String,
+    @ColumnInfo val description: String,
+    @ColumnInfo val copyright: String,
+    @ColumnInfo val managingEditor: String,
+    @ColumnInfo val lastBuildDate: String
 )

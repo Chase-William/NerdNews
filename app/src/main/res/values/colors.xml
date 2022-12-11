@@ -7,4 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="light_ghost_white">#FFF5F6FA</color>
+    <color name="outer_space_crayola">#FF394648</color>
 </resources>

@@ -9,19 +9,13 @@ import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 val DarkColorPalette = darkColorScheme(
-    primary = Color(0xFFF3A712),
-    onPrimary = Color(0xFFC03221),
-    primaryContainer = Color(0xFFD4F4DD),
-    onPrimaryContainer = Color(0xFFC03221),
-    background = Color(0xFF02020A)
+    onSurface = Color(0xFFE8E9F3),
+    surface = Color(0xFF394648)
 )
 // For light theme
 val LightColorPalette = lightColorScheme(
-    primary = Color(0xFFDDFFF7),
-    onPrimary = Color(0xFF93E1D8),
-    primaryContainer = Color(0xFFFFA69E),
-    onPrimaryContainer = Color(0xFFAA4465),
-    background = Color(0xFF462255)
+    onSurface = Color(0xFF394648),
+    surface = Color(0xFFE8E9F3)
 )
 
 @Composable
@@ -32,7 +26,7 @@ fun NerdNewsTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composab
         LightColorPalette
     }
     val systemUIController = rememberSystemUiController()
-    systemUIController.setStatusBarColor(scheme.primary)
+    systemUIController.setStatusBarColor(scheme.surface)
 
     MaterialTheme(
         colorScheme = scheme,

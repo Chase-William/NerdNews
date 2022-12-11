@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ChocolateyItemDao {
     @Query("SELECT * FROM $CHOCOLATEY_ITEM_TABLE_NAME")
-    fun getAll(): Flow<List<ChocolateyItem>>
+    fun getAll(): Flow<List<ChocolateyItem>?>
 
     @Update
     fun update(item: ChocolateyItem)

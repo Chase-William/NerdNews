@@ -6,11 +6,22 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.ritstudentchase.nerdnews.models.ChocolateyChannel
 import com.ritstudentchase.nerdnews.models.ChocolateyItem
+import com.ritstudentchase.nerdnews.models.MicrosoftChannel
+import com.ritstudentchase.nerdnews.models.MicrosoftItem
 
-@Database(entities = [ChocolateyItem::class, ChocolateyChannel::class], version = 1, exportSchema = false)
+@Database(
+    entities = [
+        ChocolateyItem::class,
+        ChocolateyChannel::class,
+        MicrosoftItem::class,
+        MicrosoftChannel::class],
+    version = 1,
+    exportSchema = false)
 abstract class NerdNewsDatabase : RoomDatabase() {
     abstract fun chocolateyItemDao(): ChocolateyItemDao
     abstract fun chocolateyChannelDao(): ChocolateyChannelDao
+    abstract fun microsoftItemDao(): MicrosoftItemDao
+    abstract fun microsoftChannelDao(): MicrosoftChannelDao
 
 
     companion object {
@@ -22,7 +33,7 @@ abstract class NerdNewsDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context,
                     NerdNewsDatabase::class.java,
-                    "app_database")
+                    "nerdnews_db")
                     // .createFromAsset("databases/nerdnews")
                     .build()
                 INSTANCE = instance
